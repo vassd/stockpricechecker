@@ -7,9 +7,10 @@ export class StockController {
 
     @Get(':symbol')
     async getStockInfo(@Param('symbol') symbol: string) {
-        const price = await this.stockService.getStockPrice(symbol);
+        const symbolInfo = await this.stockService.getStockInfo(symbol);
         const movingAverage = await this.stockService.getMovingAverage(symbol);
-        return { symbol, price, movingAverage };
+
+        return { ...symbolInfo, movingAverage };
     }
 
     @Put(':symbol')
