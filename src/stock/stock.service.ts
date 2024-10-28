@@ -4,6 +4,7 @@ import {Cron, CronExpression} from '@nestjs/schedule';
 import {PrismaService} from '../prisma/prisma.service';
 import {firstValueFrom} from "rxjs";
 import {StockPrice} from '@prisma/client';
+import {AxiosResponse} from "axios";
 
 @Injectable()
 export class StockService {
@@ -15,10 +16,10 @@ export class StockService {
     ) {}
 
     async getStockInfo(symbol: string): Promise<StockPrice> {
-        const API_KEY = process.env.FINNHUB_API_KEY;
-        const url = `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${API_KEY}`;
-        const response = await firstValueFrom(this.httpService.get(url));
-        const price = response.data.c;
+        const API_KEY: string = process.env.FINNHUB_API_KEY;
+        const url: string = `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${API_KEY}`;
+        const response: AxiosResponse = await firstValueFrom(this.httpService.get(url));
+        const price: number = response.data.c;
 
         return this.prisma.stockPrice.create({
             data: {symbol, price},
@@ -26,26 +27,26 @@ export class StockService {
     }
 
     async getMovingAverage(symbol: string): Promise<number | null> {
-        const prices = await this.prisma.stockPrice.findMany({
+        const prices: StockPrice[] = await this.prisma.stockPrice.findMany({
             where: { symbol },
             orderBy: { timestamp: 'desc' },
             take: 10,
         });
 
         if (prices.length < 10) return null;
-        const sum = prices.reduce((acc, record) => acc + record.price, 0);
+        const sum: number = prices.reduce((acc: number, record: StockPrice): number => acc + record.price, 0);
         return sum / prices.length;
     }
 
     @Cron(CronExpression.EVERY_MINUTE)
-    async handleCron() {
+    async handleCron(): Promise<void> {
         for (const symbol of this.stockSymbols) {
             await this.getStockInfo(symbol);
             console.log(`Fetched price for ${symbol}`);
         }
     }
 
-    startPriceCheck(symbol: string) {
+    startPriceCheck(symbol: string): void {
         this.stockSymbols.add(symbol);
     }
 }

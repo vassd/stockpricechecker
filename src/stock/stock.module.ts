@@ -5,8 +5,8 @@ import { StockController } from './stock.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
-    imports: [HttpModule, PrismaModule],
-    controllers: [StockController],
-    providers: [StockService],
+  imports: [HttpModule, PrismaModule],
+  controllers: [StockController],
+  providers: [StockService],
 })
 export class StockModule {}
