@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './controller/app.controller';
-import { AppService } from './service/app.service';
+import {StockController} from "./stock/stock.controller";
+import {HttpModule} from "@nestjs/axios";
+import {StockService} from "./stock/stock.service";
+import {PrismaModule} from "./prisma/prisma.module";
+import {ScheduleModule} from "@nestjs/schedule";
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [HttpModule, ScheduleModule.forRoot(), PrismaModule],
+  controllers: [StockController],
+  providers: [StockService],
 })
 export class AppModule {}
