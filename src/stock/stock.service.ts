@@ -1,6 +1,8 @@
-import { Injectable, HttpService } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
+import { firstValueFrom } from "rxjs";
 
 @Injectable()
 export class StockService {
@@ -14,7 +16,7 @@ export class StockService {
     async getStockPrice(symbol: string): Promise<number> {
         const API_KEY = process.env.FINNHUB_API_KEY;
         const url = `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${API_KEY}`;
-        const response = await this.httpService.get(url).toPromise();
+        const response = await firstValueFrom(this.httpService.get(url));
         const price = response.data.c;
 
         await this.prisma.stockPrice.create({
