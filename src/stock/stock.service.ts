@@ -74,7 +74,7 @@ export class StockService {
         return sum / prices.length;
       }
     } catch (error) {
-      console.error('Error calculating moving average: ', error.message);
+      console.error(`Error calculating moving average: ${error.message}`);
       throw new HttpException(
         'Error calculating moving average.',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -89,7 +89,7 @@ export class StockService {
         await this.getStockInfo(symbol);
         console.log(`Fetched price for ${symbol}`);
       } catch (error) {
-        console.error(`Error fetching price for ${symbol}:`, error.message);
+        console.error(`Error fetching price for ${symbol}: ${error.message}`);
       }
     }
   }
