@@ -6,6 +6,8 @@ import { firstValueFrom } from 'rxjs';
 import { StockPrice } from '@prisma/client';
 import { AxiosResponse } from 'axios';
 
+const DATA_RETENTION_MINUTES = 15;
+
 @Injectable()
 export class StockService {
   private stockSymbols: Set<string> = new Set();
@@ -96,5 +98,21 @@ export class StockService {
 
   startPriceCheck(symbol: string): void {
     this.stockSymbols.add(symbol);
+  }
+
+  @Cron(CronExpression.EVERY_10_MINUTES)
+  async cleanupOldData(): Promise<void> {
+    const cutoffDate = new Date(Date.now() - DATA_RETENTION_MINUTES * 60 * 1000);
+
+    try {
+      await this.prisma.stockPrice.deleteMany({
+        where: {
+          timestamp: { lt: cutoffDate },
+        },
+      });
+      console.log(`Old data cleanup completed at ${new Date().toISOString()}`);
+    } catch (error) {
+      console.error(`Error during data cleanup: ${error.message}`);
+    }
   }
 }

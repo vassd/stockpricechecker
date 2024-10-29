@@ -198,4 +198,38 @@ describe('StockService', () => {
       expect(stockService['stockSymbols'].has(symbol)).toBe(true);
     });
   });
+
+  describe('cleanupOldData', () => {
+    it('should delete records older than the cutoff date', async () => {
+      const DATA_RETENTION_MINUTES = 15;
+      const nowDate = Date.now();
+      const cutoffDate = new Date(nowDate - DATA_RETENTION_MINUTES * 60 * 1000);
+      jest.spyOn(prismaService.stockPrice, 'deleteMany').mockImplementation(() => undefined);
+      jest.spyOn(Date, 'now').mockImplementation(() => nowDate);
+
+      await stockService.cleanupOldData();
+
+      expect(prismaService.stockPrice.deleteMany).toHaveBeenCalledWith({
+        where: {
+          timestamp: { lt: cutoffDate },
+        },
+      });
+      expect(prismaService.stockPrice.deleteMany).toHaveBeenCalledTimes(1);
+    });
+
+    it('should log an error if deleteMany fails', async () => {
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+      jest.spyOn(prismaService.stockPrice, 'deleteMany').mockImplementation(() => {
+        throw new Error('Database error');
+      });
+
+      await stockService.cleanupOldData();
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+          'Error during data cleanup: Database error',
+      );
+
+      consoleErrorSpy.mockRestore();
+    });
+  })
 });
