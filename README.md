@@ -47,6 +47,7 @@ An application to check stock prices.
 * **Linters:** Eslint, Prettier
 * **Testing:** Jest
 * **Open API:** Swagger
+* **CI/CD Tool:** GitHub Actions
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
