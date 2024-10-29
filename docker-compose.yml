@@ -1,0 +1,26 @@
+services:
+  server:
+    image: 'stock-pricer-checker:latest'
+    build:
+      context: .
+    container_name: server
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://test:pass@postgres:5432/mydb
+      - FINNHUB_API_KEY=ciqlqj9r01qjff7cr300ciqlqj9r01qjff7cr30g
+    depends_on:
+      - postgres
+  postgres:
+    image: 'postgres'
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_USER=test
+      - POSTGRES_DB=mydb
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
