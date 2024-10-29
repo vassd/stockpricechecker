@@ -1,10 +1,12 @@
 {
-  "name": "template",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "name": "client",
+  "version": "1.0.0",
+  "description": "An application to check stock prices.",
+  "author": "vassd",
   "private": true,
-  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/vassd/stockpricechecker/issues"
+  },
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\"",
